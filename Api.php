@@ -18,7 +18,8 @@
    private function conectarDB() {  
      $dsn = 'mysql:dbname=' . self::nombre_db . ';host=' . self::servidor;  
      try {  
-       $this->_conn = new PDO($dsn, self::usuario_db, self::pwd_db, array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES  \'UTF8\''));  
+      $this->_conn = new PDO($dsn, self::usuario_db, self::pwd_db, array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES  \'UTF8\''));
+      //$this->_conn = new PDO($dsn, self::usuario_db, self::pwd_db);  
      } catch (PDOException $e) {  
        echo 'Falló la conexión: ' . $e->getMessage();  
      }  
@@ -62,30 +63,32 @@
      }  
      $this->mostrarRespuesta($this->convertirJson($this->devolverError(0)), 404);  
    }  
-   private function convertirJson($data) {  
-     //echo $data;
-     echo json_encode($data);
-     return json_encode($data);  
+   private function convertirJson($data) {
+     //return json_encode($data);  
+    print_r((($data)));
+    $fecha = new DateTime();
+    echo $fecha->getTimestamp()."  ";
+    echo "Unicode: ", json_encode($data, JSON_UNESCAPED_UNICODE), "\n";
+
+     return json_encode($data,JSON_UNESCAPED_UNICODE);
    }  
    
    private function usuarios() {  
     if ($_SERVER['REQUEST_METHOD'] != "GET") {  
        $this->mostrarRespuesta($this->convertirJson($this->devolverError(1)), 405);  
      }  
-     //$query = $this->_conn->query("SELECT ID,nom,DNI FROM `personal` where primer='mas'"); // where actiu=1 and ID_junta>0"); //  
-     //$query = $this->_conn->query("SELECT * FROM `personatge` WHERE `personatge` LIKE '%capi%'"); // where actiu=1 and ID_junta>0"); //  
-     $query = $this->_conn->query("SELECT id_persona,nom,primer,segon,extensio,mail FROM personal where exist=1");
-
+     //$query = $this->_conn->query("SELECT id_persona, nom, cognom1, cognom2, mail, extensio FROM personal where exist=1 and nom='David'");
+     $query=$this->_conn->query("select ID, nom, primer, segon from personal where actiu=1");
      $filas = $query->fetchAll(PDO::FETCH_ASSOC);  
      $num = count($filas);
-     echo $num;
-     //echo $filas;
+     //echo $num;
+     //print_r ($filas);
      $num;  
      if ($num > 0) {  
        $respuesta['estado'] = 'correcto';  
-       $respuesta['usuarios'] = $filas;  
-       $this->mostrarRespuesta($this->convertirJson($respuesta), 200);  
-     }  
+       $respuesta['usuarios'] = $filas; 
+       $this->mostrarRespuesta($this->convertirJson($respuesta), 200);
+      }  
      $this->mostrarRespuesta($this->devolverError(2), 204);  
    }  
     
