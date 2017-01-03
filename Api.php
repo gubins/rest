@@ -16,10 +16,9 @@
    }
 
    private function conectarDB() {  
-     $dsn = 'mysql:dbname=' . self::nombre_db . ';host=' . self::servidor;  
+     $dsn = 'mysql:dbname=' . self::nombre_db . ';host=' . self::servidor.';charset=utf8';  
      try {  
-      $this->_conn = new PDO($dsn, self::usuario_db, self::pwd_db, array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES  \'UTF8\''));
-      //$this->_conn = new PDO($dsn, self::usuario_db, self::pwd_db);  
+      $this->_conn = new PDO($dsn, self::usuario_db, self::pwd_db);  
      } catch (PDOException $e) {  
        echo 'Falló la conexión: ' . $e->getMessage();  
      }  
@@ -64,26 +63,16 @@
      $this->mostrarRespuesta($this->convertirJson($this->devolverError(0)), 404);  
    }  
    private function convertirJson($data) {
-     //return json_encode($data);  
-    print_r((($data)));
-    $fecha = new DateTime();
-    echo $fecha->getTimestamp()."  ";
-    echo "Unicode: ", json_encode($data, JSON_UNESCAPED_UNICODE), "\n";
-
-     return json_encode($data,JSON_UNESCAPED_UNICODE);
+         return json_encode($data,JSON_UNESCAPED_UNICODE);
    }  
    
    private function usuarios() {  
     if ($_SERVER['REQUEST_METHOD'] != "GET") {  
        $this->mostrarRespuesta($this->convertirJson($this->devolverError(1)), 405);  
      }  
-     //$query = $this->_conn->query("SELECT id_persona, nom, cognom1, cognom2, mail, extensio FROM personal where exist=1 and nom='David'");
-     $query=$this->_conn->query("select ID, nom, primer, segon from personal where actiu=1");
+     $query=$this->_conn->query("select ID, nom, primer, segon, telefon, correu from personal where actiu=1");
      $filas = $query->fetchAll(PDO::FETCH_ASSOC);  
      $num = count($filas);
-     //echo $num;
-     //print_r ($filas);
-     $num;  
      if ($num > 0) {  
        $respuesta['estado'] = 'correcto';  
        $respuesta['usuarios'] = $filas; 
