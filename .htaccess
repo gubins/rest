@@ -5,3 +5,9 @@ RewriteEngine on
  RewriteCond %{REQUEST_FILENAME} !-l  
  RewriteRule ^(.+)$ Api.php?url=$1 [QSA,NC,L]  
 
+## nginx configuration
+#location /rest/ {
+#if (!-e $request_filename){
+#rewrite ^/rest/(.+)$ /rest/Api.php?url=$1 break;
+#}
+#}
