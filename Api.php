@@ -92,24 +92,37 @@
        if (!empty($email) and !empty($pwd)) {  
          if (filter_var($email, FILTER_VALIDATE_EMAIL)) {  
            //consulta preparada ya hace mysqli_real_escape()  
-           $query = $this->_conn->prepare("SELECT id, nombre, email, fRegistro FROM usuario WHERE   
-           email=:email AND password=:pwd ");  
+          $query = $this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+           $query = $this->_conn->prepare("SELECT id, nom, primer, segon, correu, telefon FROM personal WHERE 
+           correu='".$email."' AND telefon='".$pwd."'");  
            $query->bindValue(":email", $email);  
-           $query->bindValue(":pwd", sha1($pwd));  
+           $query->bindValue(":telefon", $pwd); 
+           
+           //correu=:email AND telefon=:pwd ");  
+           /*
+           correu=? AND telefon=?");  
+           $query->bindValue(1, $email);  
+           $query->bindValue(2, $pwd); 
+           */
+           print_r($this->datosPeticion); 
+           //$query->bindValue(":pwd", sha1($pwd));  
            $query->execute();  
+           print_r($query);
            if ($fila = $query->fetch(PDO::FETCH_ASSOC)) {  
              $respuesta['estado'] = 'correcto';  
              $respuesta['msg'] = 'datos pertenecen a usuario registrado';  
-             $respuesta['usuario']['id'] = $fila['id'];  
-             $respuesta['usuario']['nombre'] = $fila['nombre'];  
-             $respuesta['usuario']['email'] = $fila['email'];  
+             $respuesta['usuari']['id'] = $fila['id'];  
+             $respuesta['usuari']['nom'] = $fila['nom']." ".$fila['primer']." ".$fila['segon'];  
+             $respuesta['usuari']['correu'] = $fila['correu'];  
+             $respuesta['usuari']['telefon'] = $fila['telefon'];  
              $this->mostrarRespuesta($this->convertirJson($respuesta), 200);  
            }  
          }  
        }  
      }  
      $this->mostrarRespuesta($this->convertirJson($this->devolverError(3)), 400);  
-   }  
+   echo "\n\n";
+ }  
      
    private function actualizarNombre($idUsuario) {  
      if ($_SERVER['REQUEST_METHOD'] != "PUT") {  
